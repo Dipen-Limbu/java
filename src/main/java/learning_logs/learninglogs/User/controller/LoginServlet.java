@@ -5,12 +5,10 @@ import java.sql.SQLException;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 import learning_logs.learninglogs.User.dao.implementation.UserImplementation;
 import learning_logs.learninglogs.User.model.User;
+import jakarta.servlet.http.Cookie;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -32,11 +30,15 @@ public class LoginServlet extends HttpServlet {
 
             if (user != null) {
                 HttpSession session = req.getSession();
+                session.setMaxInactiveInterval(60*30);
                 session.setAttribute("loggedInUser", user);
+                Cookie cookie = new Cookie("user", user.getEmail());
+                cookie.setMaxAge(60*60*24);
                 req.setAttribute("username", user.getUserName());
                 req.getRequestDispatcher("/home.jsp").forward(req, resp);
                 return;
             }
+
 
             req.setAttribute("error", "Invalid email or password.");
             req.setAttribute("email", email);
